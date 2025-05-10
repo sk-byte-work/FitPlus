@@ -11,6 +11,8 @@ public interface ExerciseService {
 
     ExerciseDTO getExerciseById(@Valid Long id) throws Exception;
 
+    Exercise getExercise(long id);
+
     void updateExercise(Long id, ExerciseDTO exerciseRequestDTO) throws Exception;
 
     void deleteExercise(@Valid Long id);

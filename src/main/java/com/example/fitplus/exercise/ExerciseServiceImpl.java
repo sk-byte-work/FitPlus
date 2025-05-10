@@ -1,5 +1,6 @@
 package com.example.fitplus.exercise;
 
+import com.example.fitplus.exceptions.FitPlusException;
 import com.example.fitplus.users.User;
 import com.example.fitplus.users.UserService;
 import org.springframework.stereotype.Service;
@@ -78,12 +79,18 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public ExerciseDTO getExerciseById(Long id) throws Exception{
+        Exercise exercise = getExercise(id);
+        return ExerciseDTO.transferExercise(exercise);
+    }
+
+    @Override
+    public Exercise getExercise(long id) {
         Optional<Exercise> exerciseOptl = exerciseRepository.findById(id);
         if(exerciseOptl.isEmpty()){
-            throw new RuntimeException("Resource Not Found");
+            throw new FitPlusException("Resource Not Found");
         }
 
-        return ExerciseDTO.transferExercise(exerciseOptl.get());
+        return  exerciseOptl.get();
     }
 
     private User validateAndGetUser(Long userID) throws Exception {
