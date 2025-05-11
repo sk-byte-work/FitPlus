@@ -1,5 +1,6 @@
 package com.example.fitplus.set;
 
+import com.example.fitplus.WorkOutStatus;
 import com.example.fitplus.workoutdetails.WorkoutDetails;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
@@ -22,14 +23,17 @@ public class ExerciseSet {
 
     private Integer weight;
 
+    private WorkOutStatus status;
+
     public ExerciseSet(){
 
     }
 
-    public ExerciseSet(WorkoutDetails workoutDetails, Integer reps, Integer weight){
+    public ExerciseSet(WorkoutDetails workoutDetails, Integer reps, Integer weight, WorkOutStatus status){
         this.workoutDetails = workoutDetails;
         this.reps = reps;
         this.weight = weight;
+        this.status = status;
     }
 
     public WorkoutDetails getWorkoutDetails() {
@@ -56,8 +60,16 @@ public class ExerciseSet {
         this.weight = weight;
     }
 
-    public static ExerciseSet newSet(WorkoutDetails workoutDetails, Integer weight, Integer reps)
+    public static ExerciseSet newSet(WorkoutDetails workoutDetails, Integer weight, Integer reps, WorkOutStatus status)
     {
-        return new ExerciseSet(workoutDetails, reps, weight);
+        return new ExerciseSet(workoutDetails, reps, weight, status);
+    }
+
+    public WorkOutStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(WorkOutStatus status) {
+        this.status = status;
     }
 }

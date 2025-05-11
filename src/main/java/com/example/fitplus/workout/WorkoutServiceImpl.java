@@ -58,10 +58,44 @@ public class WorkoutServiceImpl implements WorkoutService{
 
         return workoutOptional.get();
     }
+
     @Override
     public void deleteWorkout(long id) {
         Workout workout = getWorkout(id);
         getWorkoutRepository().delete(workout);
+    }
+
+    @Override
+    public void markWorkoutAsCompleted(long workoutId)
+    {
+        Workout workout = getWorkout(workoutId);
+        if(workout.getStatus() == WorkOutStatus.COMPLETED)
+        {
+            throw new FitPlusException("Workout already marked as completed");
+        }
+
+        changeWorkoutStatus(workout, WorkOutStatus.COMPLETED);
+    }
+
+    private void changeWorkoutStatus(Workout workout, WorkOutStatus status) {
+        workout.setStatus(status);
+        getWorkoutRepository().save(workout);
+    }
+
+    @Override
+    public boolean isWorkoutCompleted(long workoutId) {
+        return getWorkoutRepository().existsByStatus(WorkOutStatus.COMPLETED);
+    }
+
+    @Override
+    public void markWorkoutAsPending(long workoutId) {
+        Workout workout = getWorkout(workoutId);
+        if(workout.getStatus() == WorkOutStatus.PENDING)
+        {
+            throw new FitPlusException("Workout is already in pending status. Cannot change status");
+        }
+
+        changeWorkoutStatus(workout, WorkOutStatus.PENDING);
     }
 
 }
