@@ -118,4 +118,18 @@ public class WorkoutController {
         return new ResponseEntity<>(ApplicationUtil.getResponseMap(HttpStatus.OK.value(), "Workout Marked as Pending :)"), HttpStatus.OK);
     }
 
+    @PostMapping("/{id}/exercises/{exerciseId}/sets/{setId}/finish")
+    public ResponseEntity<Map> markExerciseSetAsCompleted(@PathVariable long id, @PathVariable long exerciseId, @PathVariable long setId) throws Exception
+    {
+        getSetService().markSetAsCompleted(id, exerciseId, setId);
+        return new ResponseEntity<>(ApplicationUtil.getResponseMap(HttpStatus.OK.value(), "Set Marked as completed :)"), HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/exercises/{exerciseId}/sets/{setId}/pending")
+    public ResponseEntity<Map> markExerciseSetAsPending(@PathVariable long id, @PathVariable long exerciseId, @PathVariable long setId) throws Exception
+    {
+        getSetService().markSetAsPending(id, exerciseId, setId);
+        return new ResponseEntity<>(ApplicationUtil.getResponseMap(HttpStatus.OK.value(), "Set Marked as pending :)"), HttpStatus.OK);
+    }
+
 }

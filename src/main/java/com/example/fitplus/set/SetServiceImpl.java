@@ -1,6 +1,8 @@
 package com.example.fitplus.set;
 
+import com.example.fitplus.WorkOutStatus;
 import com.example.fitplus.exceptions.FitPlusException;
+import com.example.fitplus.workout.WorkoutService;
 import com.example.fitplus.workoutdetails.WorkoutDetails;
 import com.example.fitplus.workoutdetails.WorkoutDetailsService;
 import org.springframework.stereotype.Service;
@@ -12,11 +14,13 @@ public class SetServiceImpl implements SetService{
 
     private final WorkoutDetailsService workoutDetailsService;
     private final SetRepository setRepository;
+    private final WorkoutService workoutService;
 
-    public SetServiceImpl(WorkoutDetailsService workoutDetailsService, SetRepository setRepository)
+    public SetServiceImpl(WorkoutDetailsService workoutDetailsService, SetRepository setRepository, WorkoutService workoutService)
     {
         this.workoutDetailsService = workoutDetailsService;
         this.setRepository = setRepository;
+        this.workoutService = workoutService;
     }
 
     private WorkoutDetailsService getWorkoutDetailsService()
@@ -33,7 +37,7 @@ public class SetServiceImpl implements SetService{
     public void addNewSetToExercise(long workoutId, long exerciseId, SetRequestDTO setRequestDTO) throws Exception
     {
         WorkoutDetails workoutDetails = getWorkoutDetailsService().getWorkoutDetails(workoutId, exerciseId);
-        ExerciseSet set = ExerciseSet.newSet(workoutDetails, setRequestDTO.weight(), setRequestDTO.reps());
+        ExerciseSet set = ExerciseSet.newSet(workoutDetails, setRequestDTO.weight(), setRequestDTO.reps(), WorkOutStatus.PENDING);
 
         getSetRepository().save(set);
     }
@@ -66,5 +70,49 @@ public class SetServiceImpl implements SetService{
     {
         ExerciseSet exerciseSet = validateAndExerciseSet(workoutId, exerciseId, setId);
         getSetRepository().delete(exerciseSet);
+    }
+
+    @Override
+    public void markSetAsCompleted(long workoutId, long exerciseId, long setId) throws Exception {
+        validateWorkoutStatus(workoutId);
+
+        ExerciseSet set = validateAndExerciseSet(workoutId, exerciseId, setId);
+        if(set.getStatus() == WorkOutStatus.COMPLETED)
+        {
+            throw new FitPlusException("Set is already marked as completed. Hence cannot mark as completed");
+        }
+
+        changeExerciseSetStatus(set, WorkOutStatus.COMPLETED);
+    }
+
+    private void changeExerciseSetStatus(ExerciseSet set, WorkOutStatus status) {
+        set.setStatus(status);
+        getSetRepository().save(set);
+    }
+
+    private void validateWorkoutStatus(long workoutId)
+    {
+        boolean isWorkoutCompleted = getWorkoutService().isWorkoutCompleted(workoutId);
+        if(isWorkoutCompleted)
+        {
+            throw new FitPlusException("Workout is Completed. Hence cannot mark Set as completed");
+        }
+    }
+
+    @Override
+    public void markSetAsPending(long workoutId, long exerciseId, long setId) throws Exception {
+        validateWorkoutStatus(workoutId);
+
+        ExerciseSet set = validateAndExerciseSet(workoutId, exerciseId, setId);
+        if(set.getStatus() == WorkOutStatus.PENDING)
+        {
+            throw new FitPlusException("Set is already in Pending state. Hence cannot mark as pending");
+        }
+
+        changeExerciseSetStatus(set, WorkOutStatus.PENDING);
+    }
+
+    public WorkoutService getWorkoutService() {
+        return workoutService;
     }
 }
