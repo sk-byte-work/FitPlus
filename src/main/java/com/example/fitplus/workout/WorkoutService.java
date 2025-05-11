@@ -1,0 +1,11 @@
+package com.example.fitplus.workout;
+
+public interface WorkoutService {
+    void createWorkout(WorkoutRequestDTO workoutRequestDTO);
+
+    void updateWorkout(Long id, String workoutName);
+
+    Workout getWorkout(Long id);
+
+    void deleteWorkout(long id);
+}
