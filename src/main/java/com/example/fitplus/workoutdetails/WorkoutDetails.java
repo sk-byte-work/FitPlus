@@ -52,4 +52,13 @@ public class WorkoutDetails {
     {
         return new WorkoutDetails(workout, exercise);
     }
+
+    public Long getWorkoutDetailsId() {
+        return workoutDetailsId;
+    }
+
+    public void setWorkoutDetailsId(Long workoutDetailsId) {
+        this.workoutDetailsId = workoutDetailsId;
+    }
+
 }

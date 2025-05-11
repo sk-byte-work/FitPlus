@@ -81,4 +81,27 @@ public class WorkoutController {
         return new ResponseEntity<>(ApplicationUtil.getResponseMap(HttpStatus.OK.value(), "Set was added to the Workout :)"), HttpStatus.OK);
     }
 
+    @PutMapping("/{id}/exercises/{exerciseId}/sets/{setId}")
+    public ResponseEntity<?> updateSetDetails(
+            @PathVariable @Valid long id,
+            @PathVariable @Valid long exerciseId,
+            @PathVariable @Valid long setId,
+            @RequestBody @Valid SetRequestDTO setRequestDTO
+    ) throws Exception
+    {
+        getSetService().updateSetDetails(id, exerciseId, setId, setRequestDTO);
+        return new ResponseEntity<>(ApplicationUtil.getResponseMap(HttpStatus.OK.value(), "Set was updated Successfully :)"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/exercises/{exerciseId}/sets/{setId}")
+    public ResponseEntity<?> deleteSetDetails(
+            @PathVariable @Valid long id,
+            @PathVariable @Valid long exerciseId,
+            @PathVariable @Valid long setId
+    ) throws Exception
+    {
+        getSetService().deleteSetDetails(id, exerciseId, setId);
+        return new ResponseEntity<>(ApplicationUtil.getResponseMap(HttpStatus.OK.value(), "Set was deleted Successfully :)"), HttpStatus.OK);
+    }
+
 }
