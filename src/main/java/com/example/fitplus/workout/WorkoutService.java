@@ -8,4 +8,10 @@ public interface WorkoutService {
     Workout getWorkout(Long id);
 
     void deleteWorkout(long id);
+
+    void markWorkoutAsCompleted(long workoutId);
+
+    boolean isWorkoutCompleted(long workoutId);
+
+    void markWorkoutAsPending(long workoutId);
 }

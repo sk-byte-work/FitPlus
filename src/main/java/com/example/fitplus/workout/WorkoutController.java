@@ -104,4 +104,18 @@ public class WorkoutController {
         return new ResponseEntity<>(ApplicationUtil.getResponseMap(HttpStatus.OK.value(), "Set was deleted Successfully :)"), HttpStatus.OK);
     }
 
+    @PostMapping("/{id}/finish")
+    public ResponseEntity<Map> markWorkoutAsFinished(@PathVariable long id) throws Exception
+    {
+        getWorkoutService().markWorkoutAsCompleted(id);
+        return new ResponseEntity<>(ApplicationUtil.getResponseMap(HttpStatus.OK.value(), "Workout Marked as completed :)"), HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/pending")
+    public ResponseEntity<Map> markWorkoutAsPending(@PathVariable long id) throws Exception
+    {
+        getWorkoutService().markWorkoutAsPending(id);
+        return new ResponseEntity<>(ApplicationUtil.getResponseMap(HttpStatus.OK.value(), "Workout Marked as Pending :)"), HttpStatus.OK);
+    }
+
 }

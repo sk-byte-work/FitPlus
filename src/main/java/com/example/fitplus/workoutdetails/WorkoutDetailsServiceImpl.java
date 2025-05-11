@@ -41,17 +41,31 @@ public class WorkoutDetailsServiceImpl implements WorkoutDetailsService{
     @Override
     public void associateExerciseToWorkout(long workoutId, long exerciseId) throws Exception
     {
-        boolean isExerciseAlreadyAssociated = isExerciseAssociated(workoutId, exerciseId);
-        if(isExerciseAlreadyAssociated)
-        {
-            throw new FitPlusException("This Exercise already associated to the workout.");
-        }
+        validateExerciseAssociation(workoutId, exerciseId);
 
         Workout workout = getWorkoutService().getWorkout(workoutId);
         Exercise exercise = getExerciseService().getExercise(exerciseId);
         WorkoutDetails workoutDetails = WorkoutDetails.newWorkoutDetails(workout, exercise);
 
         getWorkoutDetailsRepository().save(workoutDetails);
+    }
+
+    private void validateExerciseAssociation(long workoutId, long exerciseId) {
+        boolean isExerciseAlreadyAssociated = isExerciseAssociated(workoutId, exerciseId);
+        if(isExerciseAlreadyAssociated)
+        {
+            throw new FitPlusException("This Exercise already associated to the workout.");
+        }
+
+        validateAgainstWorkoutStatus(workoutId);
+    }
+
+    private void validateAgainstWorkoutStatus(long workoutId) {
+        boolean isWorkoutCompleted = getWorkoutService().isWorkoutCompleted(workoutId);
+        if(isWorkoutCompleted)
+        {
+            throw new FitPlusException("Workout is already marked as completed. Hence cannot do this operation");
+        }
     }
 
     private boolean isExerciseAssociated(long workoutId, long exerciseId) {
@@ -65,6 +79,8 @@ public class WorkoutDetailsServiceImpl implements WorkoutDetailsService{
         {
             throw new FitPlusException("Exercise is not associated with Workout. Hence cannot delete Exercise from workout");
         }
+
+        validateAgainstWorkoutStatus(workoutId);
 
         WorkoutDetails workoutDetails = getWorkoutDetails(workoutId, exerciseId);
         getWorkoutDetailsRepository().delete(workoutDetails);
