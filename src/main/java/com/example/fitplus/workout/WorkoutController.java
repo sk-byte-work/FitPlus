@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -130,6 +131,13 @@ public class WorkoutController {
     {
         getSetService().markSetAsPending(id, exerciseId, setId);
         return new ResponseEntity<>(ApplicationUtil.getResponseMap(HttpStatus.OK.value(), "Set Marked as pending :)"), HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getWorkouts() throws Exception
+    {
+        List<WorkoutResponseDTO> workouts = getWorkoutService().getAllWorkouts();
+        return ResponseEntity.ok(workouts);
     }
 
 }

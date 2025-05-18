@@ -7,6 +7,7 @@ import com.example.fitplus.users.UserService;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -96,6 +97,12 @@ public class WorkoutServiceImpl implements WorkoutService{
         }
 
         changeWorkoutStatus(workout, WorkOutStatus.PENDING);
+    }
+
+    @Override
+    public List<WorkoutResponseDTO> getAllWorkouts() {
+        List<Workout> workouts = getWorkoutRepository().findAll();
+        return WorkoutResponseDTO.transferWorkouts(workouts);
     }
 
 }

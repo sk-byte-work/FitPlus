@@ -1,5 +1,7 @@
 package com.example.fitplus.workout;
 
+import java.util.List;
+
 public interface WorkoutService {
     void createWorkout(WorkoutRequestDTO workoutRequestDTO);
 
@@ -14,4 +16,8 @@ public interface WorkoutService {
     boolean isWorkoutCompleted(long workoutId);
 
     void markWorkoutAsPending(long workoutId);
+
+    List<WorkoutResponseDTO> getAllWorkouts();
+
 }
+
