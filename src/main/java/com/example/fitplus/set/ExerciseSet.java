@@ -72,4 +72,12 @@ public class ExerciseSet {
     public void setStatus(WorkOutStatus status) {
         this.status = status;
     }
+
+    public Long getSetId() {
+        return setId;
+    }
+
+    public void setSetId(Long setId) {
+        this.setId = setId;
+    }
 }
