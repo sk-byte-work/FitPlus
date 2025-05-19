@@ -19,5 +19,6 @@ public interface WorkoutService {
 
     List<WorkoutResponseDTO> getAllWorkouts();
 
+    WorkoutResponseDTO getWorkoutDetails(long workoutId);
 }
 

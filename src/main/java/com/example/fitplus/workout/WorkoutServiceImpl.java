@@ -2,11 +2,19 @@ package com.example.fitplus.workout;
 
 import com.example.fitplus.WorkOutStatus;
 import com.example.fitplus.exceptions.FitPlusException;
+import com.example.fitplus.exercise.Exercise;
+import com.example.fitplus.set.ExerciseSet;
+import com.example.fitplus.set.SetDetailsDTO;
+import com.example.fitplus.set.SetRepository;
 import com.example.fitplus.users.User;
 import com.example.fitplus.users.UserService;
+import com.example.fitplus.workoutdetails.WorkoutDetails;
+import com.example.fitplus.workoutdetails.WorkoutDetailsDTO;
+import com.example.fitplus.workoutdetails.WorkoutDetailsRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,10 +23,14 @@ public class WorkoutServiceImpl implements WorkoutService{
 
     private final WorkoutRepository workoutRepository;
     private final UserService userService;
+    private final SetRepository setRepository;
+    private final WorkoutDetailsRepository workoutDetailsRepository;
 
-    public  WorkoutServiceImpl(WorkoutRepository workoutRepository, UserService userService){
+    public  WorkoutServiceImpl(WorkoutRepository workoutRepository, UserService userService, SetRepository setRepository, WorkoutDetailsRepository workoutDetailsRepository){
         this.workoutRepository = workoutRepository;
         this.userService = userService;
+        this.setRepository = setRepository;
+        this.workoutDetailsRepository = workoutDetailsRepository;
     }
 
     public WorkoutRepository getWorkoutRepository() {
@@ -105,4 +117,46 @@ public class WorkoutServiceImpl implements WorkoutService{
         return WorkoutResponseDTO.transferWorkouts(workouts);
     }
 
+    @Override
+    public WorkoutResponseDTO getWorkoutDetails(long workoutId) {
+        Workout workout = getWorkout(workoutId);
+        if(workout == null)
+        {
+            throw new FitPlusException("Resource Not Found");
+        }
+
+        List<WorkoutDetailsDTO> workoutDetailsDTOS = new ArrayList<>();
+
+        List<WorkoutDetails> workoutDetails = getWorkoutDetailsRepository().findAllByWorkoutId(workoutId);
+        for(WorkoutDetails wkDetails : workoutDetails)
+        {
+            long workoutDetailsId = wkDetails.getWorkoutDetailsId();
+            Exercise exercise = wkDetails.getExercise();
+            List<SetDetailsDTO> setDetailsDTOS = getSetDetailsDTO(workoutDetailsId);
+            WorkoutDetailsDTO workoutDetailsDTO = new WorkoutDetailsDTO(exercise.getId(), exercise.getExerciseName(), exercise.getCategory(), exercise.getDescription(), setDetailsDTOS);
+            workoutDetailsDTOS.add(workoutDetailsDTO);
+        }
+
+        WorkoutResponseDTO workoutResponseDTO = new WorkoutResponseDTO(workoutId, workout.getWorkoutName(), workout.getStatus(), workoutDetailsDTOS);
+        return workoutResponseDTO;
+    }
+
+    private List<SetDetailsDTO> getSetDetailsDTO(long workoutDetailsId) {
+        List<SetDetailsDTO> setDetailsDTOS = new ArrayList<>();
+        List<ExerciseSet> sets = getSetRepository().findAllByWorkoutDetailsWorkoutDetailsId(workoutDetailsId);
+        for (ExerciseSet exerciseSet : sets)
+        {
+            SetDetailsDTO setDetailsDTO = new SetDetailsDTO(exerciseSet.getSetId(), exerciseSet.getReps(), exerciseSet.getWeight(), exerciseSet.getStatus());
+            setDetailsDTOS.add(setDetailsDTO);
+        }
+        return setDetailsDTOS;
+    }
+
+    public SetRepository getSetRepository() {
+        return setRepository;
+    }
+
+    public WorkoutDetailsRepository getWorkoutDetailsRepository() {
+        return workoutDetailsRepository;
+    }
 }

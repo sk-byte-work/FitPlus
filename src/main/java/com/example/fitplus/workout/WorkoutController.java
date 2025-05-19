@@ -140,4 +140,11 @@ public class WorkoutController {
         return ResponseEntity.ok(workouts);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getWorkoutDetails(@PathVariable long id)
+    {
+        WorkoutResponseDTO workoutResponseDTO = getWorkoutService().getWorkoutDetails(id);
+        return ResponseEntity.ok(workoutResponseDTO);
+    }
+
 }
