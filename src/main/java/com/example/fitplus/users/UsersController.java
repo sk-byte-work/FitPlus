@@ -19,7 +19,7 @@ public class UsersController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<Map> createUser(@RequestBody User user) throws Exception {
         userService.createUser(user);
         return new ResponseEntity<>(ApplicationUtil.getResponseMap(HttpStatus.OK.value(), "User created successfully :)"), HttpStatus.OK);

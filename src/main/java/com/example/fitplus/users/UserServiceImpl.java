@@ -1,5 +1,7 @@
 package com.example.fitplus.users;
 
+import com.example.fitplus.exceptions.FitPlusException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,14 +12,41 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
 
-    public UserServiceImpl(UserRepository userRepository)
+    private final PasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder)
     {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public void createUser(User user) {
+    public void createUser(User user) throws Exception
+    {
+        validateUserCreation(user);
+        setEncodedPassword(user);
         this.userRepository.save(user);
+    }
+
+    private void setEncodedPassword(User user)
+    {
+        String encodedPassword = getPasswordEncoder().encode(user.getPassword());
+        user.setPassword(encodedPassword);
+    }
+
+    private void validateUserCreation(User user) throws Exception
+    {
+        boolean isUserPresentWithUserName = userRepository.findByUserName(user.getUserName()).isPresent();
+        if(isUserPresentWithUserName)
+        {
+            throw new FitPlusException("User already present with this User name. Please enter a new one");
+        }
+
+        boolean isUserPresentWithEmail = userRepository.findByEmail(user.getEmail()).isPresent();
+        if(isUserPresentWithEmail)
+        {
+            throw new FitPlusException("This email is already registered. Please enter another one");
+        }
     }
 
     @Override
@@ -57,5 +86,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public void deleteUser(Long id) {
         this.userRepository.deleteById(id);
+    }
+
+    public PasswordEncoder getPasswordEncoder()
+    {
+        return passwordEncoder;
     }
 }
