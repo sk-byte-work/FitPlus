@@ -7,7 +7,7 @@ import java.util.List;
 public interface ExerciseService {
     void createExercise(ExerciseDTO exerciseRequestDTO) throws Exception;
 
-    List<ExerciseDTO> getAllExercises(Long userID);
+    List<ExerciseDTO> getAllExercises();
 
     ExerciseDTO getExerciseById(@Valid Long id) throws Exception;
 
