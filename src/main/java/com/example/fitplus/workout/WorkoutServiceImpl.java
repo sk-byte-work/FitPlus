@@ -3,6 +3,7 @@ package com.example.fitplus.workout;
 import com.example.fitplus.WorkOutStatus;
 import com.example.fitplus.exceptions.FitPlusException;
 import com.example.fitplus.exercise.Exercise;
+import com.example.fitplus.security.AuthUtil;
 import com.example.fitplus.set.ExerciseSet;
 import com.example.fitplus.set.SetDetailsDTO;
 import com.example.fitplus.set.SetRepository;
@@ -25,12 +26,14 @@ public class WorkoutServiceImpl implements WorkoutService{
     private final UserService userService;
     private final SetRepository setRepository;
     private final WorkoutDetailsRepository workoutDetailsRepository;
+    private final AuthUtil authUtil;
 
-    public  WorkoutServiceImpl(WorkoutRepository workoutRepository, UserService userService, SetRepository setRepository, WorkoutDetailsRepository workoutDetailsRepository){
+    public  WorkoutServiceImpl(WorkoutRepository workoutRepository, UserService userService, SetRepository setRepository, WorkoutDetailsRepository workoutDetailsRepository, AuthUtil authUtil){
         this.workoutRepository = workoutRepository;
         this.userService = userService;
         this.setRepository = setRepository;
         this.workoutDetailsRepository = workoutDetailsRepository;
+        this.authUtil = authUtil;
     }
 
     public WorkoutRepository getWorkoutRepository() {
@@ -39,7 +42,7 @@ public class WorkoutServiceImpl implements WorkoutService{
 
     @Override
     public void createWorkout(WorkoutRequestDTO workoutRequestDTO) {
-        Long userId = workoutRequestDTO.userId();
+        Long userId = getAuthUtil().getUserId();
 
         // Getting user based on ID from request and validating
         Optional<User> userOptl = this.userService.findByID(userId);
@@ -113,7 +116,8 @@ public class WorkoutServiceImpl implements WorkoutService{
 
     @Override
     public List<WorkoutResponseDTO> getAllWorkouts() {
-        List<Workout> workouts = getWorkoutRepository().findAll();
+        Long userId = getAuthUtil().getUserId();;
+        List<Workout> workouts = getWorkoutRepository().findByUserId(userId);
         return WorkoutResponseDTO.transferWorkouts(workouts);
     }
 
@@ -158,5 +162,10 @@ public class WorkoutServiceImpl implements WorkoutService{
 
     public WorkoutDetailsRepository getWorkoutDetailsRepository() {
         return workoutDetailsRepository;
+    }
+
+    public AuthUtil getAuthUtil()
+    {
+        return authUtil;
     }
 }
