@@ -3,6 +3,8 @@ package com.example.fitplus.exercise;
 import com.example.fitplus.exceptions.FitPlusException;
 import com.example.fitplus.users.User;
 import com.example.fitplus.users.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,6 +12,8 @@ import java.util.Optional;
 
 @Service
 public class ExerciseServiceImpl implements ExerciseService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ExerciseServiceImpl.class);
 
     private final UserService userService;
     private final ExerciseRepository exerciseRepository;
@@ -32,7 +36,8 @@ public class ExerciseServiceImpl implements ExerciseService {
     public void updateExercise(Long exerciseId, ExerciseDTO exerciseRequestDTO) throws Exception {
         Optional<Exercise> existingExerciseOptl = exerciseRepository.findById(exerciseId);
         if(existingExerciseOptl.isEmpty()){
-            throw new RuntimeException("Resource Not Found");
+            logger.info("Exercise Not Found");
+            throw new FitPlusException("Resource Not Found");
         }
 
         Exercise existingExercise = existingExerciseOptl.get();
@@ -58,16 +63,20 @@ public class ExerciseServiceImpl implements ExerciseService {
             return;
         }
 
-        throw new RuntimeException("Resource Not Found");
+        logger.warn("Exercise Not Found");
+        throw new FitPlusException("Exercise Not Found");
     }
 
     private static void validateUserAssociativity(ExerciseDTO exerciseRequestDTO, Exercise existingExercise) {
         if(exerciseRequestDTO.exerciseID() != null && !existingExercise.getId().equals(exerciseRequestDTO.exerciseID())){
-            throw new RuntimeException("Cannot modify Exercise Id");
+            logger.error("You cannot modify the Exercise PK. Existing: {} Received: {}", existingExercise.getId(), exerciseRequestDTO.exerciseID());
+            throw new FitPlusException("Cannot modify Exercise Id");
         }
 
-        if(exerciseRequestDTO.userID() != null && !existingExercise.getUser().getId().equals(exerciseRequestDTO.userID())){
-            throw new RuntimeException("Cannot modify User Id");
+        Long userId = existingExercise.getUser().getId();
+        if(exerciseRequestDTO.userID() != null && !userId.equals(exerciseRequestDTO.userID())){
+            logger.error("You cannot modify the User Id, Existing: {}, Received: {}", userId, exerciseRequestDTO.userID());
+            throw new FitPlusException("Cannot modify User Id");
         }
     }
 
@@ -87,7 +96,8 @@ public class ExerciseServiceImpl implements ExerciseService {
     public Exercise getExercise(long id) {
         Optional<Exercise> exerciseOptl = exerciseRepository.findById(id);
         if(exerciseOptl.isEmpty()){
-            throw new FitPlusException("Resource Not Found");
+            logger.info("Exercise Not Found. Exercise Id: {}", id);
+            throw new FitPlusException("Exercise Not Found");
         }
 
         return  exerciseOptl.get();
@@ -96,7 +106,8 @@ public class ExerciseServiceImpl implements ExerciseService {
     private User validateAndGetUser(Long userID) throws Exception {
         Optional<User> userOptional = userService.findByID(userID);
         if(userOptional.isEmpty()){
-            throw new RuntimeException("User not found");
+            logger.info("User not found. User id: {}", userID);
+            throw new FitPlusException("User not found");
         }
         return userOptional.get();
     }

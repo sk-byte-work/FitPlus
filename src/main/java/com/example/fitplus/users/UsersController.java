@@ -1,6 +1,8 @@
 package com.example.fitplus.users;
 
 import com.example.fitplus.ApplicationUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/users")
 public class UsersController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UsersController.class);
 
     private final UserService userService;
 

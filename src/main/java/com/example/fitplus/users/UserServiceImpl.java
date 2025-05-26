@@ -1,6 +1,8 @@
 package com.example.fitplus.users;
 
 import com.example.fitplus.exceptions.FitPlusException;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +11,8 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService{
+
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepository;
 
@@ -39,12 +43,14 @@ public class UserServiceImpl implements UserService{
         boolean isUserPresentWithUserName = userRepository.findByUserName(user.getUserName()).isPresent();
         if(isUserPresentWithUserName)
         {
+            logger.info("User already present with this user name: {}", user.getUserName());
             throw new FitPlusException("User already present with this User name. Please enter a new one");
         }
 
         boolean isUserPresentWithEmail = userRepository.findByEmail(user.getEmail()).isPresent();
         if(isUserPresentWithEmail)
         {
+            logger.info("This email is already registered.");
             throw new FitPlusException("This email is already registered. Please enter another one");
         }
     }
@@ -64,7 +70,8 @@ public class UserServiceImpl implements UserService{
         Optional<User> existingUserOptl = findByID(id);
         if(existingUserOptl.isEmpty())
         {
-            throw new RuntimeException("User not found");
+            logger.info("User not found. UserId: {}", id);
+            throw new FitPlusException("User not found");
         }
 
         User existingUser = existingUserOptl.get();

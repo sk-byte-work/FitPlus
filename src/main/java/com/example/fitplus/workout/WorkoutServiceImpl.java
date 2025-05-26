@@ -11,6 +11,8 @@ import com.example.fitplus.users.UserService;
 import com.example.fitplus.workoutdetails.WorkoutDetails;
 import com.example.fitplus.workoutdetails.WorkoutDetailsDTO;
 import com.example.fitplus.workoutdetails.WorkoutDetailsRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -20,6 +22,8 @@ import java.util.Optional;
 
 @Service
 public class WorkoutServiceImpl implements WorkoutService{
+
+    private static final Logger logger = LoggerFactory.getLogger(WorkoutServiceImpl.class);
 
     private final WorkoutRepository workoutRepository;
     private final UserService userService;
@@ -44,6 +48,7 @@ public class WorkoutServiceImpl implements WorkoutService{
         // Getting user based on ID from request and validating
         Optional<User> userOptl = this.userService.findByID(userId);
         if(userOptl.isEmpty()){
+            logger.info("User not found. UserId: {}", userId);
             throw new FitPlusException("User Not Found");
         }
 
@@ -66,6 +71,7 @@ public class WorkoutServiceImpl implements WorkoutService{
     public Workout getWorkout(Long id) {
         Optional<Workout> workoutOptional = getWorkoutRepository().findById(id);
         if(workoutOptional.isEmpty()){
+            logger.info("Workout not found. WorkoutId: {}", id);
             throw new FitPlusException("Workout Not Found");
         }
 
@@ -84,6 +90,7 @@ public class WorkoutServiceImpl implements WorkoutService{
         Workout workout = getWorkout(workoutId);
         if(workout.getStatus() == WorkOutStatus.COMPLETED)
         {
+            logger.info("Workout already marked as completed. WorkoutId: {}", workoutId);
             throw new FitPlusException("Workout already marked as completed");
         }
 
@@ -105,6 +112,7 @@ public class WorkoutServiceImpl implements WorkoutService{
         Workout workout = getWorkout(workoutId);
         if(workout.getStatus() == WorkOutStatus.PENDING)
         {
+            logger.info("Workout is already in pending status. WorkoutId: {}", workoutId);
             throw new FitPlusException("Workout is already in pending status. Cannot change status");
         }
 
@@ -122,7 +130,8 @@ public class WorkoutServiceImpl implements WorkoutService{
         Workout workout = getWorkout(workoutId);
         if(workout == null)
         {
-            throw new FitPlusException("Resource Not Found");
+            logger.info("Workout not found. WorkoutId: {}", workoutId);
+            throw new FitPlusException("Workout Not Found");
         }
 
         List<WorkoutDetailsDTO> workoutDetailsDTOS = new ArrayList<>();

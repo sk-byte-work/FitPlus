@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <springProfile name="dev">
+        <!-- DEV: overwrite log file on each restart -->
+        <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+            <file>logs/app.log</file>
+            <append>false</append> <!-- This causes the file to be overwritten -->
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <root level="DEBUG">
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+
+        <!-- File appender with size-based rotation and 30-day retention -->
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>logs/application-fitplus.log</file>
+
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <!-- Daily log files with index if multiple files on the same day -->
+                <fileNamePattern>logs/application-fitplus-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <maxFileSize>10MB</maxFileSize>
+                <maxHistory>30</maxHistory>
+                <totalSizeCap>3GB</totalSizeCap> <!-- Optional: max disk usage -->
+            </rollingPolicy>
+
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <!-- Root logger: INFO level and file only -->
+        <root level="INFO">
+            <appender-ref ref="FILE"/>
+        </root>
+
+    </springProfile>
+
+</configuration>
