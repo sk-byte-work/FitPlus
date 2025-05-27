@@ -5,6 +5,8 @@ import com.example.fitplus.set.SetRequestDTO;
 import com.example.fitplus.set.SetService;
 import com.example.fitplus.workoutdetails.WorkoutDetailsService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/workouts")
 public class WorkoutController {
+
+    private static final Logger logger = LoggerFactory.getLogger(WorkoutController.class);
 
     private final WorkoutService workoutService;
     private final WorkoutDetailsService workoutDetailsService;
