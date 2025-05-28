@@ -1,6 +1,7 @@
 package com.example.fitplus.exercise;
 
 import com.example.fitplus.exceptions.FitPlusException;
+import com.example.fitplus.security.AuthUtil;
 import com.example.fitplus.users.User;
 import com.example.fitplus.users.UserService;
 import org.slf4j.Logger;
@@ -17,16 +18,18 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     private final UserService userService;
     private final ExerciseRepository exerciseRepository;
+    private final AuthUtil authUtil;
 
-    public ExerciseServiceImpl(UserService userService, ExerciseRepository exerciseRepository){
+    public ExerciseServiceImpl(UserService userService, ExerciseRepository exerciseRepository, AuthUtil authUtil){
         this.userService = userService;
         this.exerciseRepository = exerciseRepository;
+        this.authUtil = authUtil;
     }
 
     @Override
-    public void createExercise(ExerciseDTO exerciseRequestDTO) throws Exception {
-
-        Long userID = exerciseRequestDTO.userID();
+    public void createExercise(ExerciseDTO exerciseRequestDTO) throws Exception
+    {
+        Long userID = getAuthUtil().getUserId();
         User user = validateAndGetUser(userID);
         Exercise exercise = Exercise.createExercise(user, exerciseRequestDTO);
         this.exerciseRepository.save(exercise);
@@ -81,7 +84,8 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
-    public List<ExerciseDTO> getAllExercises(Long userID) {
+    public List<ExerciseDTO> getAllExercises() {
+        Long userID = getAuthUtil().getUserId();
         List<Exercise> exercises = exerciseRepository.findAllByUserId(userID);
         return ExerciseDTO.transferExercises(exercises);
     }
@@ -110,5 +114,10 @@ public class ExerciseServiceImpl implements ExerciseService {
             throw new FitPlusException("User not found");
         }
         return userOptional.get();
+    }
+
+    public AuthUtil getAuthUtil()
+    {
+        return authUtil;
     }
 }

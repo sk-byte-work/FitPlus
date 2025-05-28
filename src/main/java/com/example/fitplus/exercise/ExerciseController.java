@@ -57,8 +57,8 @@ public class ExerciseController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllExercises(@Valid @RequestParam Long userID) throws Exception {
-        List<ExerciseDTO> exercises = this.exerciseService.getAllExercises(userID);
+    public ResponseEntity<?> getAllExercises() throws Exception {
+        List<ExerciseDTO> exercises = this.exerciseService.getAllExercises();
         if(exercises.isEmpty()){
           return new ResponseEntity<>(ApplicationUtil.getResponseMap(HttpStatus.NO_CONTENT.value(), "There are no exercises present for the User"), HttpStatus.NO_CONTENT);
         }
