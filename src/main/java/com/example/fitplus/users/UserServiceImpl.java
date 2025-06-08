@@ -1,5 +1,6 @@
 package com.example.fitplus.users;
 
+import com.example.fitplus.AppThreadLocals;
 import com.example.fitplus.exceptions.FitPlusException;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -56,17 +57,22 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return this.userRepository.findAll();
+    public Optional<User> findByID(Long id) {
+        validateCurrentUser(id);
+        return this.userRepository.findById(id);
     }
 
-    @Override
-    public Optional<User> findByID(Long id) {
-        return this.userRepository.findById(id);
+    private static void validateCurrentUser(Long id)
+    {
+        if(!id.equals(AppThreadLocals.getCurrentUserId()))
+        {
+            throw new FitPlusException("Cannot Get Another Users Data");
+        }
     }
 
     @Override
     public void updateUser(Long id, User user) {
+        validateCurrentUser(id);
         Optional<User> existingUserOptl = findByID(id);
         if(existingUserOptl.isEmpty())
         {

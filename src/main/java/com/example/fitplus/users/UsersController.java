@@ -29,16 +29,6 @@ public class UsersController {
         return new ResponseEntity<>(ApplicationUtil.getResponseMap(HttpStatus.OK.value(), "User created successfully :)"), HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<?> getAllUsers() throws Exception {
-        List<UserResponse> userResponses = UserResponse.getUserResponses(userService.getAllUsers());
-        if(!userResponses.isEmpty()){
-            return ResponseEntity.ok(userResponses);
-        }
-
-        return new ResponseEntity<>(ApplicationUtil.getResponseMap(HttpStatus.OK.value(), "There are no users found"), HttpStatus.OK);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id) throws Exception {
         Optional<User> user = userService.findByID(id);

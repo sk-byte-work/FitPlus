@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public record ExerciseDTO(Long exerciseID, Long userID, @NotEmpty @NotNull String exerciseName, @NotNull @NotEmpty String category, String description) {
+public record ExerciseDTO(Long exerciseID, @NotEmpty @NotNull String exerciseName, @NotNull @NotEmpty String category, String description) {
 
     public static List<ExerciseDTO> transferExercises(List<Exercise> exercises){
         List<ExerciseDTO> exerciseDTOS = new ArrayList<>();
@@ -21,7 +21,6 @@ public record ExerciseDTO(Long exerciseID, Long userID, @NotEmpty @NotNull Strin
     public static ExerciseDTO transferExercise(Exercise exercise) {
         return new ExerciseDTO(
                 exercise.getId(),
-                exercise.getUser().getId(),
                 exercise.getExerciseName(),
                 exercise.getCategory(),
                 exercise.getDescription());

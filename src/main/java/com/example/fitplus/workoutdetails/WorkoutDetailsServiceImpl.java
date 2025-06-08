@@ -1,5 +1,6 @@
 package com.example.fitplus.workoutdetails;
 
+import com.example.fitplus.AppThreadLocals;
 import com.example.fitplus.exceptions.FitPlusException;
 import com.example.fitplus.exercise.Exercise;
 import com.example.fitplus.exercise.ExerciseService;
@@ -95,7 +96,7 @@ public class WorkoutDetailsServiceImpl implements WorkoutDetailsService{
 
     @Override
     public WorkoutDetails getWorkoutDetails(long workoutId, long exerciseId) throws Exception {
-        Optional<WorkoutDetails> workoutDetailsOptl = getWorkoutDetailsRepository().findByWorkoutIdAndExerciseId(workoutId, exerciseId);
+        Optional<WorkoutDetails> workoutDetailsOptl = getWorkoutDetailsRepository().findByWorkoutIdAndExerciseIdAndUserId(workoutId, exerciseId, AppThreadLocals.getCurrentUserId());
         if(workoutDetailsOptl.isEmpty())
         {
             logger.info("Workout details are not found. WorkoutId: {}, ExerciseId: {}", workoutId, exerciseId);

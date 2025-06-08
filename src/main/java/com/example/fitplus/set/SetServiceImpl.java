@@ -50,14 +50,14 @@ public class SetServiceImpl implements SetService
     @Override
     public void updateSetDetails(long workoutId, long exerciseId, long setId, SetRequestDTO setRequestDTO) throws Exception
     {
-        ExerciseSet exerciseSet = validateAndExerciseSet(workoutId, exerciseId, setId);
+        ExerciseSet exerciseSet = validateAndGetExerciseSet(workoutId, exerciseId, setId);
         exerciseSet.setWeight(setRequestDTO.weight());
         exerciseSet.setReps(setRequestDTO.reps());
 
         getSetRepository().save(exerciseSet);
     }
 
-    private ExerciseSet validateAndExerciseSet(long workoutId, long exerciseId, long setId) throws Exception
+    private ExerciseSet validateAndGetExerciseSet(long workoutId, long exerciseId, long setId) throws Exception
     {
         WorkoutDetails workoutDetails = getWorkoutDetailsService().getWorkoutDetails(workoutId, exerciseId);
 
@@ -74,7 +74,7 @@ public class SetServiceImpl implements SetService
     @Override
     public void deleteSetDetails(long workoutId, long exerciseId, long setId) throws Exception 
     {
-        ExerciseSet exerciseSet = validateAndExerciseSet(workoutId, exerciseId, setId);
+        ExerciseSet exerciseSet = validateAndGetExerciseSet(workoutId, exerciseId, setId);
         getSetRepository().delete(exerciseSet);
     }
 
@@ -82,7 +82,7 @@ public class SetServiceImpl implements SetService
     public void markSetAsCompleted(long workoutId, long exerciseId, long setId) throws Exception {
         validateWorkoutStatus(workoutId);
 
-        ExerciseSet set = validateAndExerciseSet(workoutId, exerciseId, setId);
+        ExerciseSet set = validateAndGetExerciseSet(workoutId, exerciseId, setId);
         if(set.getStatus() == WorkOutStatus.COMPLETED)
         {
             logger.info("Set is already marked as completed. WorkoutId: {}, ExerciseId: {}, SetId: {}", workoutId, exerciseId, setId);
@@ -111,7 +111,7 @@ public class SetServiceImpl implements SetService
     public void markSetAsPending(long workoutId, long exerciseId, long setId) throws Exception {
         validateWorkoutStatus(workoutId);
 
-        ExerciseSet set = validateAndExerciseSet(workoutId, exerciseId, setId);
+        ExerciseSet set = validateAndGetExerciseSet(workoutId, exerciseId, setId);
         if(set.getStatus() == WorkOutStatus.PENDING)
         {
             logger.info("Set is already in Pending status. WorkoutId: {}, ExerciseId: {}, SetId: {}", workoutId, exerciseId, setId);
