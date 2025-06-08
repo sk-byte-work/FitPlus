@@ -1,13 +1,16 @@
 package com.example.fitplus.workout;
 
+import com.example.fitplus.UserScopedEntity;
 import com.example.fitplus.WorkOutStatus;
-import com.example.fitplus.users.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.Filter;
 
 @Entity
-public class Workout {
+@Filter(name = "userFilter", condition = "user_id = :userId")
+public class Workout extends UserScopedEntity
+{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "workout_id")
@@ -22,27 +25,14 @@ public class Workout {
     @Column(nullable = false)
     private WorkOutStatus status;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
     private Long createdTime;
 
     public Workout(){
 
     }
 
-    public Workout(String workoutName, User createdBy){
+    public Workout(String workoutName){
         this.workoutName = workoutName;
-        this.user = createdBy;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public String getWorkoutName() {

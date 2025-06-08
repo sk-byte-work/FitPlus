@@ -1,12 +1,14 @@
 package com.example.fitplus.exercise;
 
-import com.example.fitplus.users.User;
+import com.example.fitplus.UserScopedEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.Filter;
 
 @Entity
-public class Exercise {
+public class Exercise extends UserScopedEntity
+{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,31 +24,25 @@ public class Exercise {
 
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
     public Exercise(){
 
     }
 
-    public Exercise(Long id, String exerciseName, String category, String description, User user){
+    public Exercise(Long id, String exerciseName, String category, String description){
         this.id = id;
         this.exerciseName = exerciseName;
         this.category = category;
         this.description = description;
-        this.user = user;
     }
 
-    public Exercise(String exerciseName, String category, String description, User user){
+    public Exercise(String exerciseName, String category, String description){
         this.exerciseName = exerciseName;
         this.category = category;
         this.description = description;
-        this.user = user;
     }
 
-    public static Exercise createExercise(User user, ExerciseDTO exerciseRequestDTO) {
-        return new Exercise(exerciseRequestDTO.exerciseName(), exerciseRequestDTO.category(), exerciseRequestDTO.description(), user);
+    public static Exercise createExercise(ExerciseDTO exerciseRequestDTO) {
+        return new Exercise(exerciseRequestDTO.exerciseName(), exerciseRequestDTO.category(), exerciseRequestDTO.description());
     }
 
     public Long getId() {
@@ -81,11 +77,4 @@ public class Exercise {
         this.description = description;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 }

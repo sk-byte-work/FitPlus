@@ -1,20 +1,22 @@
 package com.example.fitplus.workout;
 
+import com.example.fitplus.AppThreadLocals;
 import com.example.fitplus.WorkOutStatus;
 import com.example.fitplus.exceptions.FitPlusException;
 import com.example.fitplus.exercise.Exercise;
-import com.example.fitplus.security.AuthUtil;
 import com.example.fitplus.set.ExerciseSet;
 import com.example.fitplus.set.SetDetailsDTO;
 import com.example.fitplus.set.SetRepository;
-import com.example.fitplus.users.User;
-import com.example.fitplus.users.UserService;
 import com.example.fitplus.workoutdetails.WorkoutDetails;
 import com.example.fitplus.workoutdetails.WorkoutDetailsDTO;
 import com.example.fitplus.workoutdetails.WorkoutDetailsRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.hibernate.Session;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -27,17 +29,16 @@ public class WorkoutServiceImpl implements WorkoutService{
     private static final Logger logger = LoggerFactory.getLogger(WorkoutServiceImpl.class);
 
     private final WorkoutRepository workoutRepository;
-    private final UserService userService;
     private final SetRepository setRepository;
     private final WorkoutDetailsRepository workoutDetailsRepository;
-    private final AuthUtil authUtil;
 
-    public  WorkoutServiceImpl(WorkoutRepository workoutRepository, UserService userService, SetRepository setRepository, WorkoutDetailsRepository workoutDetailsRepository, AuthUtil authUtil){
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public  WorkoutServiceImpl(WorkoutRepository workoutRepository, SetRepository setRepository, WorkoutDetailsRepository workoutDetailsRepository){
         this.workoutRepository = workoutRepository;
-        this.userService = userService;
         this.setRepository = setRepository;
         this.workoutDetailsRepository = workoutDetailsRepository;
-        this.authUtil = authUtil;
     }
 
     public WorkoutRepository getWorkoutRepository() {
@@ -46,17 +47,8 @@ public class WorkoutServiceImpl implements WorkoutService{
 
     @Override
     public void createWorkout(WorkoutRequestDTO workoutRequestDTO) {
-        Long userId = getAuthUtil().getUserId();
-
-        // Getting user based on ID from request and validating
-        Optional<User> userOptl = this.userService.findByID(userId);
-        if(userOptl.isEmpty()){
-            logger.info("User not found. UserId: {}", userId);
-            throw new FitPlusException("User Not Found");
-        }
-
         // Creating workout
-        Workout workout = new Workout(workoutRequestDTO.workoutName(), userOptl.get());
+        Workout workout = new Workout(workoutRequestDTO.workoutName());
         workout.setStatus(WorkOutStatus.PENDING);
         workout.setCreatedTime(Instant.now().toEpochMilli());
 
@@ -72,7 +64,7 @@ public class WorkoutServiceImpl implements WorkoutService{
 
     @Override
     public Workout getWorkout(Long id) {
-        Optional<Workout> workoutOptional = getWorkoutRepository().findById(id);
+        Optional<Workout> workoutOptional = getWorkoutRepository().findByIdAndUserId(id, AppThreadLocals.getCurrentUserId());
         if(workoutOptional.isEmpty()){
             logger.info("Workout not found. WorkoutId: {}", id);
             throw new FitPlusException("Workout Not Found");
@@ -124,8 +116,7 @@ public class WorkoutServiceImpl implements WorkoutService{
 
     @Override
     public List<WorkoutResponseDTO> getAllWorkouts() {
-        Long userId = getAuthUtil().getUserId();;
-        List<Workout> workouts = getWorkoutRepository().findByUserId(userId);
+        List<Workout> workouts = getWorkoutRepository().findByUserId(AppThreadLocals.getCurrentUserId());
         return WorkoutResponseDTO.transferWorkouts(workouts);
     }
 
@@ -171,10 +162,5 @@ public class WorkoutServiceImpl implements WorkoutService{
 
     public WorkoutDetailsRepository getWorkoutDetailsRepository() {
         return workoutDetailsRepository;
-    }
-
-    public AuthUtil getAuthUtil()
-    {
-        return authUtil;
     }
 }

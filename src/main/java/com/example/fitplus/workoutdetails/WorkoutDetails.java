@@ -1,13 +1,15 @@
 package com.example.fitplus.workoutdetails;
 
+import com.example.fitplus.UserScopedEntity;
 import com.example.fitplus.exercise.Exercise;
 import com.example.fitplus.workout.Workout;
 import jakarta.persistence.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.*;
 
 @Entity
-public class WorkoutDetails {
+@Filter(name = "userFilter", condition = "user_id = :userId")
+public class WorkoutDetails extends UserScopedEntity
+{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
