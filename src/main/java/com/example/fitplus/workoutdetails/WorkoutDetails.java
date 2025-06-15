@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.*;
 
 @Entity
-@Filter(name = "userFilter", condition = "user_id = :userId")
 public class WorkoutDetails extends UserScopedEntity
 {
 

@@ -4,7 +4,6 @@ import com.example.fitplus.UserScopedEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.Filter;
 
 @Entity
 public class Exercise extends UserScopedEntity
