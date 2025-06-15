@@ -5,10 +5,8 @@ import com.example.fitplus.WorkOutStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.Filter;
 
 @Entity
-@Filter(name = "userFilter", condition = "user_id = :userId")
 public class Workout extends UserScopedEntity
 {
     @Id
