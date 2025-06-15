@@ -1,6 +1,5 @@
 # 🏋️‍♀️FitPlus (An easy way to Track your Workouts)
 
----
 
 ## Description:
     
@@ -11,7 +10,6 @@
 - There are no predefined Exercises in the app. User have to create Exercises and then use it to track workouts
 - A user can effectively Create/Edit/Delete a Workout/Exercise/Set.
 
----
 
 ## Frameworks Used:
 
@@ -21,13 +19,11 @@
 - Spring Boot Data JPA (For database connectivity)
 - Spring Boot Stater Validations (For Param Validations)
 
----
 
 ## Data Modeling:
 
-  ![Data Modeling](src/main/resources/FitPlus Data Modeling.png)
+  ![Data Modeling](https://github.com/sk-byte-work/FitPlus/blob/main/src/main/resources/FitPlus%20Data%20Modeling.png)
 
---- 
 
 ## Learnings:
 
